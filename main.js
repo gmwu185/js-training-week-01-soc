@@ -1,90 +1,212 @@
-var todoData = [];
+/** 第一週主線作業說明：
+ ** https://hackmd.io/@hexschool/HJDbvkFqU/%2FF2N_naHkTFeJE0DDeI_OgA
+ */
 
-document.getElementById('addTodo').addEventListener('click', function () {
-  var str = '';
-  if (document.getElementById('newTodo').value.trim() !== '') {
-    todoData.push({
-      id: Math.floor(Date.now()),
-      title: document.getElementById('newTodo').value,
-      completed: false,
-    })
-    todoData.forEach(function (item) {
-      str += `<li class="list-group-item">
-<div class="d-flex">
-<div class="form-check">
-<input type="checkbox" class="form-check-input" ${item.completed ? 'checked' : ''} data-action="complete" data-id="${item.id}">
-<label class="form-check-label ${item.completed ? 'completed' : ''}" data-action="complete" data-id="${item.id}"> ${item.title}</label>
-</div>
-<button type="button" class="close ml-auto" aria-label="Close">
-<span aria-hidden="true" data-action="remove" data-id="${item.id}">&times;</span>
-</button>
-</div>
-</li>`;
-    })
-    document.getElementById('todoList').innerHTML = str;
-    document.getElementById('taskCount').textContent = todoData.length;
-    document.getElementById('newTodo').value = '';
+
+/* 資料
+-------------------------------------------------- */
+let todoData = [
+  {
+    id: 1,
+    title: '這是預設的第一個待辨項目',
+    completed: false,
   }
+];
+/* End of 資料
+-------------------------------------------------- */
+
+
+/* 取得 DOM 元素
+-------------------------------------------------- */
+let EL_addTodo = document.getElementById('addTodo');
+let EL_todoList = document.getElementById('todoList');
+let EL_newTodo = document.getElementById('newTodo');
+let EL_taskCount = document.getElementById('taskCount');
+let EL_clearTask = document.getElementById('clearTask');
+/* End of 取得 DOM 元素
+-------------------------------------------------- */
+
+/* 資料處理
+-------------------------------------------------- */
+const pushTadoNewData = () => {
+  todoData.push({
+    id: Math.floor(Date.now()),
+    title: EL_newTodo.value,
+    completed: false,
+  });
+};
+/* End of 資料處理
+-------------------------------------------------- */
+
+/* 輸出運算
+-------------------------------------------------- */
+const render = ( todoData ) => {
+  let renderStr = '';
+  todoData.forEach( (item) => {
+    renderStr += `
+      <li class="list-group-item">
+        <div class="d-flex">
+          <div class="form-check">
+            <input type="checkbox" class="form-check-input" ${item.completed ? 'checked' : ''} data-action="complete" data-id="${item.id}">
+            <label class="form-check-label ${item.completed ? 'completed' : ''}" data-action="complete" data-id="${item.id}"> ${item.title}</label>
+          </div>
+          <button type="button" class="close ml-auto" aria-label="Close"> 
+            <span aria-hidden="true" data-action="remove" data-id="${item.id}">&times;</span>
+          </button>
+        </div>
+      </li>
+    `;
+  });
+  EL_todoList.innerHTML = renderStr;
+  EL_taskCount.textContent = todoData.length;
+};
+/* End of 輸出運算
+-------------------------------------------------- */
+
+/* 初始化執行
+-------------------------------------------------- */
+render(todoData);
+/* End of 初始化執行
+-------------------------------------------------- */
+
+/* 元素綁定
+-------------------------------------------------- */
+
+/*----------  新加資料並清空 input value 字串  ----------*/
+
+/** 寫法一 */
+// EL_addTodo.addEventListener('click', () => {
+//   if (EL_newTodo.value.trim() !== '') {
+//     pushTadoNewData();
+//     render(todoData);
+//     EL_newTodo.value = '';
+//   }
+// });
+
+/** 寫法二 */
+EL_addTodo.addEventListener('click', () => {
+  EL_newTodo.value.trim() !== '' ? (
+    pushTadoNewData(), 
+    render(todoData), 
+    EL_newTodo.value = ''
+  )
+    :""
 });
-document.getElementById('clearTask').addEventListener('click', function (e) {
+
+/** 直接在 input 按下 enter 觸發相關執行內容 */
+EL_newTodo.addEventListener('keydown', (e) => {
+  // if ( e.keyCode === 13 ){
+  //   EL_newTodo.value.trim() !== '' ? (
+  //     pushTadoNewData(), 
+  //     render(todoData), 
+  //     EL_newTodo.value = ''
+  //   )
+  //     :""
+  // }
+  e.keyCode === 13 ? EL_newTodo.value.trim() !== '' ? (
+        pushTadoNewData(), 
+        render(todoData), 
+        EL_newTodo.value = ''
+      )
+        :""
+    :""
+}, false);
+
+/*----------  /新加資料並清空 input value 字串  ----------*/
+
+/*----------  清空所有 todo 陣列資料  ----------*/
+EL_clearTask.addEventListener('click', (e) => {
   e.preventDefault();
   todoData = [];
-  document.getElementById('todoList').innerHTML = '';
-  document.getElementById('taskCount').textContent = todoData.length;
+  render(todoData);
 });
-document.getElementById('todoList').addEventListener('click', function (e) {
-  var newIndex = 0;
-  if (e.target.dataset.action == 'remove') {
-    todoData.forEach(function (item, key) {
-      if (e.target.dataset.id == item.id) {
-        newIndex = key;
-      }
-    })
-    todoData.splice(newIndex, 1);
-    var str = '';
-    todoData.forEach(function (item) {
-      str += `<li class="list-group-item">
-<div class="d-flex">
-<div class="form-check">
-<input type="checkbox" class="form-check-input" ${item.completed ? 'checked' : ''} data-action="complete" data-id="${item.id}">
-<label class="form-check-label ${item.completed ? 'completed' : ''}" data-action="complete" data-id="${item.id}"> ${item.title}</label>
-</div>
-<button type="button" class="close ml-auto" aria-label="Close">
-<span aria-hidden="true" data-action="remove" data-id="${item.id}">&times;</span>
-</button>
-</div>
-</li>`;
-    });
-    document.getElementById('todoList').innerHTML = str;
-    document.getElementById('taskCount').textContent = todoData.length;
-  }
+/*----------  /清空所有 todo 陣列資料  ----------*/
+
+/*----------  點按刪除按鈕對應資料索引刪除資料  ----------*/
+
+/** 寫法一 */
+// EL_todoList.addEventListener('click', (e) => {
+//   let newIndex = 0;
+//   if (e.target.dataset.action == 'remove') {
+//     todoData.forEach(function (item, key) {
+//       if (e.target.dataset.id == item.id) {
+//         newIndex = key;
+//       }
+//     })
+//     todoData.splice(newIndex, 1);
+//     render(todoData);
+//   }
+// });
+
+/** 寫法二 */
+EL_todoList.addEventListener('click', (e) => {
+  let newIndex = 0;
+  return e.target.dataset.action == 'remove' ? (
+    todoData.forEach( 
+      (item, key) => e.target.dataset.id == item.id ? newIndex = key : "" , 
+      todoData.splice(newIndex, 1), 
+      render(todoData) 
+    )
+  )
+    : ""
 });
-document.getElementById('todoList').addEventListener('click', function (e) {
-  if (e.target.dataset.action == 'complete') {
-    todoData.forEach(function (item) {
-      if (e.target.dataset.id == item.id) {
-        if (item.completed) {
-          item.completed = false;
-        } else {
-          item.completed = true;
-        }
-      }
-    })
-    var str = '';
-    todoData.forEach(function (item) {
-      str += `<li class="list-group-item">
-<div class="d-flex">
-<div class="form-check">
-<input type="checkbox" class="form-check-input" ${item.completed ? 'checked' : ''} data-action="complete" data-id="${item.id}">
-<label class="form-check-label ${item.completed ? 'completed' : ''}" data-action="complete" data-id="${item.id}"> ${item.title}</label>
-</div>
-<button type="button" class="close ml-auto" aria-label="Close">
-<span aria-hidden="true" data-action="remove" data-id="${item.id}">&times;</span>
-</button>
-</div>
-</li>`;
-    })
-    document.getElementById('todoList').innerHTML = str;
-    document.getElementById('taskCount').textContent = todoData.length;
-  }
+
+/*----------  /點按刪除按鈕對應資料索引刪除資料  ----------*/
+
+
+/*----------  勾選完成後處理資料並更新畫面  ----------*/
+/** 寫法 1 
+ * 拆分將資料處理後的運算結果透過畫面處理函式更新畫面
+*/
+// EL_todoList.addEventListener('click', (e) => {
+//   if (e.target.dataset.action == 'complete') {
+//     todoData.forEach(function (item) {
+//       if (e.target.dataset.id == item.id) {
+//         if (item.completed) {
+//           item.completed = false;
+//         } else {
+//           item.completed = true;
+//         }
+//       }
+//     })
+//     render(todoData);
+//   }
+// });
+
+/** 寫法 2 
+ * 透過 ',' 接 render(todoData) 函式
+*/
+// EL_todoList.addEventListener('click', (e) => {
+//   if (e.target.dataset.action == 'complete') {
+//     todoData.forEach((item) => {
+//       e.target.dataset.id == item.id ? (item.completed ? item.completed = false : item.completed = true) : '';
+//     }), render(todoData)
+//   }
+// });
+
+/** 寫法 3 
+ * 透過 () 讓函式 return 三元運算子成為一個運算項目，並透過單行處理完相關內容，可讀性差。
+*/
+// EL_todoList.addEventListener('click', (e) => {
+//   e.target.dataset.action == 'complete' ? ( todoData.forEach((item) => e.target.dataset.id == item.id ? (item.completed ? item.completed = false : item.completed = true) : ''), render(todoData) ) : ""
+// });
+
+/** 寫法 4 
+ * 三元運算子處理三層的結果，透過斷行與 () 增加可讀性，但還是不直觀不過比較簡裋。
+*/
+EL_todoList.addEventListener('click', (e) => {
+  e.target.dataset.action == 'complete' ? ( 
+    todoData.forEach( (item) => e.target.dataset.id == item.id ? (
+        item.completed ? item.completed = false 
+          : item.completed = true
+      ) 
+      : ''
+    ), 
+    render(todoData)
+  ) : ""
 });
+
+/*----------  /勾選完成後處理資料並更新畫面  ----------*/
+
+/* End of 元素綁定
+-------------------------------------------------- */
