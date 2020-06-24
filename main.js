@@ -36,8 +36,8 @@ const pushTadoNewData = () => {
     completed: false,
   });
 };
-const getLocalStorageData = () => JSON.parse( localStorage.getItem( todoStaredListLocalStoragePath ) )
-const saveLocalStorageData = ( data ) => localStorage.setItem( todoStaredListLocalStoragePath, JSON.stringify( data ) );
+const getLocalStorageData = () => JSON.parse( localStorage.getItem( todoStaredListLocalStoragePath ) );
+const saveLocalStorageData = (data) => localStorage.setItem( todoStaredListLocalStoragePath, JSON.stringify( data ) );
 /* End of 資料處理
 -------------------------------------------------- */
 
@@ -68,7 +68,8 @@ const render = ( renderTodoData ) => {
 
 /* 初始化執行
 -------------------------------------------------- */
-if ( getLocalStorageData().length !== 0 ) {
+// console.log('getLocalStorageData()', getLocalStorageData());
+if ( getLocalStorageData() !== null ) {
   // 如果存於 LocalStorage 的 todo data 資料長度不為 0 ，直接將資料賦予到 todoData [] 並輸出畫面
   todoData = getLocalStorageData();
   render( todoData );
@@ -157,8 +158,8 @@ EL_todoList.addEventListener('click', (e) => {
   
   return e.target.dataset.action == 'remove' ? (
     todoData.forEach( 
-
-      /** 寫法 1 */
+      
+      /** 寫法一 */
       // (item, key) => {
       //   // e.target.dataset.id == item.id ? newIndex = key : "" , 
       //   if (e.target.dataset.id == item.id ) {
@@ -170,11 +171,11 @@ EL_todoList.addEventListener('click', (e) => {
       //   }
       // }
 
-      /** 寫法 2 */
+      /** 寫法二 */
       (item, key) => e.target.dataset.id == item.id ? ( 
         newIndex = key,
         todoData.splice(newIndex, 1), 
-        // console.log('remove todoData', todoData),
+        console.log('remove todoData', todoData),
         saveLocalStorageData( todoData ),
         render( todoData ) 
       )
