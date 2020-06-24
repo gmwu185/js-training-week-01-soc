@@ -6,12 +6,13 @@
 /* 資料
 -------------------------------------------------- */
 let todoData = [
-  {
-    id: 1,
-    title: '這是預設的第一個待辨項目',
-    completed: false,
-  }
+  // {
+  //   id: 1,
+  //   title: '這是預設的第一個待辨項目',
+  //   completed: false,
+  // }
 ];
+let todoStaredListLocalStoragePath = 'todoStaredList';
 /* End of 資料
 -------------------------------------------------- */
 
@@ -30,19 +31,21 @@ let EL_clearTask = document.getElementById('clearTask');
 -------------------------------------------------- */
 const pushTadoNewData = () => {
   todoData.push({
-    id: Math.floor(Date.now()),
+    id: Math.floor( Date.now() ),
     title: EL_newTodo.value,
     completed: false,
   });
 };
+const getLocalStorageData = () => JSON.parse( localStorage.getItem( todoStaredListLocalStoragePath ) )
+const saveLocalStorageData = ( data ) => localStorage.setItem( todoStaredListLocalStoragePath, JSON.stringify( data ) );
 /* End of 資料處理
 -------------------------------------------------- */
 
 /* 輸出運算
 -------------------------------------------------- */
-const render = ( todoData ) => {
+const render = ( renderTodoData ) => {
   let renderStr = '';
-  todoData.forEach( (item) => {
+  renderTodoData.forEach( (item) => {
     renderStr += `
       <li class="list-group-item">
         <div class="d-flex">
@@ -58,14 +61,21 @@ const render = ( todoData ) => {
     `;
   });
   EL_todoList.innerHTML = renderStr;
-  EL_taskCount.textContent = todoData.length;
+  EL_taskCount.textContent = renderTodoData.length;
 };
 /* End of 輸出運算
 -------------------------------------------------- */
 
 /* 初始化執行
 -------------------------------------------------- */
-render(todoData);
+if ( getLocalStorageData().length !== 0 ) {
+  // 如果存於 LocalStorage 的 todo data 資料長度不為 0 ，直接將資料賦予到 todoData [] 並輸出畫面
+  todoData = getLocalStorageData();
+  render( todoData );
+} else {
+  // 直接將 todoData [] 處理輸出畫面
+  render( todoData );
+}
 /* End of 初始化執行
 -------------------------------------------------- */
 
@@ -86,8 +96,9 @@ render(todoData);
 /** 寫法二 */
 EL_addTodo.addEventListener('click', () => {
   EL_newTodo.value.trim() !== '' ? (
-    pushTadoNewData(), 
-    render(todoData), 
+    pushTadoNewData(),
+    saveLocalStorageData( todoData ),
+    render( todoData ), 
     EL_newTodo.value = ''
   )
     :""
@@ -105,7 +116,8 @@ EL_newTodo.addEventListener('keydown', (e) => {
   // }
   e.keyCode === 13 ? EL_newTodo.value.trim() !== '' ? (
         pushTadoNewData(), 
-        render(todoData), 
+        saveLocalStorageData( todoData ),
+        render( todoData ), 
         EL_newTodo.value = ''
       )
         :""
@@ -118,7 +130,8 @@ EL_newTodo.addEventListener('keydown', (e) => {
 EL_clearTask.addEventListener('click', (e) => {
   e.preventDefault();
   todoData = [];
-  render(todoData);
+  saveLocalStorageData( todoData );
+  render( todoData );
 });
 /*----------  /清空所有 todo 陣列資料  ----------*/
 
@@ -141,11 +154,32 @@ EL_clearTask.addEventListener('click', (e) => {
 /** 寫法二 */
 EL_todoList.addEventListener('click', (e) => {
   let newIndex = 0;
+  
   return e.target.dataset.action == 'remove' ? (
     todoData.forEach( 
-      (item, key) => e.target.dataset.id == item.id ? newIndex = key : "" , 
-      todoData.splice(newIndex, 1), 
-      render(todoData) 
+
+      /** 寫法 1 */
+      // (item, key) => {
+      //   // e.target.dataset.id == item.id ? newIndex = key : "" , 
+      //   if (e.target.dataset.id == item.id ) {
+      //     // console.log('item.id', item.id, 'newIndex', key)
+      //     newIndex = key;
+      //     todoData.splice(newIndex, 1);
+      //     saveLocalStorageData( todoData );
+      //     render( todoData );
+      //   }
+      // }
+
+      /** 寫法 2 */
+      (item, key) => e.target.dataset.id == item.id ? ( 
+        newIndex = key,
+        todoData.splice(newIndex, 1), 
+        // console.log('remove todoData', todoData),
+        saveLocalStorageData( todoData ),
+        render( todoData ) 
+      )
+        : "" 
+
     )
   )
     : ""
@@ -202,7 +236,8 @@ EL_todoList.addEventListener('click', (e) => {
       ) 
       : ''
     ), 
-    render(todoData)
+    saveLocalStorageData( todoData ),
+    render( todoData )
   ) : ""
 });
 
