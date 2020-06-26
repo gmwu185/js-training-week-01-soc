@@ -2165,7 +2165,7 @@ progress {
 }
 
 .form-check-input:checked[type="checkbox"] {
-  background-image: url("/assets/img/icon--customCheckBoxAfter-check.svg");
+  background-image: url("../../assets/img/icon--customCheckBoxAfter-check.svg");
 }
 
 .form-check-input:checked[type="radio"] {
@@ -8279,5 +8279,3 @@ button.close {
 }
 
 /*=====  End of utilities  ======*/
-
-/*# sourceMappingURL=style.css.map */
