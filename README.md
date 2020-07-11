@@ -5,12 +5,14 @@
 - 刪除、完成 Todo。
 - 一鍵刪除所有任務。
 - 透過 localStorage 存下使用者當前記錄，重新開啟瀏覽器時資料重新取出。
-- bootstrap modal 透過 JavaScript 判斷回應使用者操作體驗的狀態回應。
+- bootstrap 5  modal 透過 JavaScript 判斷回應使用者操作體驗的狀態回應。
 ## 技術內容
 - JavaScript 觀注點分離觀念。
 - JavaScript localStorage 資料寫入與取出。
 - JavaScript ES6 函式預設 return 透過多層三元運算子回應函式判斷後的結果。
 - 透過 gulp 產出 gh-page 分支自動產出 GitHub Pages 與 bable js 轉譯處理。
+- bootstrap 5 透過 npm 取用 scss 自定 UI 樣式。
+- bootstrap 5 與 material-design-icons 整合與樣式除錯。
 
 # 使用資源
 ## Bootstrap 5.0.0-alpha1 
